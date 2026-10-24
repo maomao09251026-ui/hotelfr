@@ -113,7 +113,7 @@ header h1 em{font-style:normal;color:var(--blue)}
   <div id="v-list"></div>
 </div>
 
-<script src="data.js?v=1"></script>
+<script src="data.js?v=2"></script>
 <script>
 const DAYS = window.HOTELFR;
 const $ = id => document.getElementById(id);
@@ -121,7 +121,7 @@ const synth = window.speechSynthesis;
 
 // ------- 音频引擎：有 MP3 用 MP3，否则用系统语音 -------
 let MANIFEST = null;
-fetch('audio/manifest.json?v=1').then(r=>r.ok?r.json():null).then(j=>{ if(j) MANIFEST=new Set(j); }).catch(()=>{});
+fetch('audio/manifest.json?v=2').then(r=>r.ok?r.json():null).then(j=>{ if(j) MANIFEST=new Set(j); }).catch(()=>{});
 let frVoice=null, zhVoice=null, enVoice=null;
 function pickVoices(){
   const all = synth.getVoices();
