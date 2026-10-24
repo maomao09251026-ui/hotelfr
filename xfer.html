@@ -1,0 +1,25 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>xfer</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script></head>
+<body><pre id="log">starting…</pre>
+<script>
+const log = m => { document.getElementById('log').textContent += '\n' + m; };
+(async () => {
+  try {
+    const u = new URLSearchParams(location.search).get('u');
+    const target = window.opener;
+    if (!target) { log('no opener'); return; }
+    const r = await fetch(u); const buf = await r.arrayBuffer(); log('zip ' + buf.byteLength);
+    const z = await JSZip.loadAsync(buf);
+    const names = Object.keys(z.files).filter(n => !z.files[n].dir);
+    log('files ' + names.length);
+    let i = 0;
+    for (const n of names) {
+      const data = await z.files[n].async('arraybuffer');
+      target.postMessage({ t: 'file', name: n, data }, '*', [data]);
+      if (++i % 100 === 0) log('sent ' + i);
+    }
+    target.postMessage({ t: 'done', n: names.length }, '*');
+    log('done ' + names.length);
+  } catch (e) { log('ERR ' + e.message); }
+})();
+</script></body></html>
