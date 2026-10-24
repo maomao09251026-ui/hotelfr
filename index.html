@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>酒店法语 · 7天速成</title>
+<style>
+:root{
+  --ink:#0E1016; --ink-2:#171A24; --line:#2A2F3F;
+  --fog:#9AA3B8; --paper:#F1F3F8;
+  --blue:#6FA8FF; --blue-deep:#2F6FD6; --rose:#FF8FA3; --ok:#5CC98B; --amber:#F5B94B;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  background:var(--ink); color:var(--paper);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;
+  display:flex;flex-direction:column;
+  padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  overflow:hidden;
+}
+header{padding:12px 18px 6px;display:flex;align-items:baseline;justify-content:space-between}
+header h1{font-size:15px;font-weight:600;letter-spacing:.5px}
+header h1 em{font-style:normal;color:var(--blue)}
+#counter{font-size:13px;color:var(--fog);font-variant-numeric:tabular-nums}
+#chips{display:flex;gap:8px;overflow-x:auto;padding:4px 18px 6px;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-shrink:0}
+#chips::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;padding:7px 13px;border-radius:999px;border:1px solid var(--line);color:var(--fog);font-size:13px;background:transparent;white-space:nowrap}
+.chip.on{background:var(--blue);border-color:var(--blue);color:#0A1630;font-weight:600}
+#goal{padding:0 18px 6px;font-size:12px;color:var(--fog);opacity:.8;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#stage{flex:1;display:flex;flex-direction:column;justify-content:center;padding:0 24px;min-height:0;position:relative}
+#sec-label{font-size:12px;letter-spacing:2px;color:var(--blue);margin-bottom:10px;font-weight:600}
+#fr{font-family:ui-serif,"New York",Georgia,serif;font-size:clamp(23px,6.5vw,36px);line-height:1.28;font-weight:600;min-height:2.6em;transition:opacity .15s}
+#fr.dim{opacity:.12}
+#xie{margin-top:10px;font-size:18px;color:var(--amber);line-height:1.45;letter-spacing:1px;transition:opacity .15s}
+#xie.hide{opacity:0}
+#zh{margin-top:10px;font-size:17px;color:var(--paper);line-height:1.5}
+#en{margin-top:6px;font-size:14px;color:var(--fog);line-height:1.45;font-style:italic}
+#playing-dot{position:absolute;top:6px;right:24px;width:8px;height:8px;border-radius:50%;background:var(--ok);opacity:0;transition:opacity .2s}
+#playing-dot.on{opacity:1;animation:pulse 1s infinite alternate}
+@keyframes pulse{from{transform:scale(1)}to{transform:scale(1.6)}}
+#rep-status{margin-top:14px;font-size:12px;color:var(--fog);letter-spacing:1px;min-height:1.2em;font-variant-numeric:tabular-nums}
+#opts{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:6px 14px;flex-shrink:0}
+.opt{padding:9px 2px;border-radius:12px;border:1px solid var(--line);background:var(--ink-2);color:var(--paper);font-size:12px;text-align:center}
+.opt b{color:var(--blue);font-weight:600}
+#controls{display:flex;align-items:center;justify-content:center;gap:22px;padding:6px 18px 10px;flex-shrink:0}
+.ctl{border:1px solid var(--line);background:var(--ink-2);color:var(--paper);border-radius:50%;width:56px;height:56px;font-size:20px;display:flex;align-items:center;justify-content:center}
+.ctl.main{width:68px;height:68px;background:var(--blue);border-color:var(--blue);color:#0A1630;font-size:26px}
+#voice-note{text-align:center;font-size:11px;color:var(--fog);opacity:.6;padding:0 18px 8px;flex-shrink:0}
+
+/* 词汇面板 */
+#vocab{position:fixed;inset:0;z-index:99;background:var(--ink);display:none;flex-direction:column;padding:calc(env(safe-area-inset-top) + 14px) 0 calc(env(safe-area-inset-bottom) + 10px)}
+#vocab.on{display:flex}
+#v-head{display:flex;justify-content:space-between;align-items:center;padding:0 18px 10px;flex-shrink:0}
+#v-head h2{font-size:16px;font-weight:600}
+#v-head h2 em{font-style:normal;color:var(--blue)}
+#v-close{border:1px solid var(--line);background:var(--ink-2);color:var(--paper);border-radius:999px;padding:8px 16px;font-size:13px}
+#v-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 14px}
+.v-row{display:flex;align-items:center;gap:12px;padding:12px 10px;border-bottom:1px solid var(--line)}
+.v-row.playing{background:var(--ink-2);border-radius:12px}
+.v-txt{flex:1;min-width:0}
+.v-f{font-family:ui-serif,"New York",Georgia,serif;font-size:19px;font-weight:600}
+.v-x{font-size:14px;color:var(--amber);margin-top:2px}
+.v-c{font-size:14px;color:var(--paper);margin-top:2px}
+.v-c span{color:var(--fog);font-style:italic;margin-left:8px}
+.v-play{border:1px solid var(--line);background:var(--ink-2);color:var(--paper);border-radius:50%;width:40px;height:40px;font-size:15px;flex-shrink:0}
+#v-all{margin:10px 14px 0;padding:12px;border-radius:14px;border:none;background:var(--blue);color:#0A1630;font-size:15px;font-weight:700;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>酒店法语 <em>7天</em>速成</h1>
+  <div id="counter"></div>
+</header>
+
+<div id="chips"></div>
+<div id="goal"></div>
+
+<div id="stage">
+  <div id="playing-dot"></div>
+  <div id="sec-label"></div>
+  <div id="fr"></div>
+  <div id="xie"></div>
+  <div id="zh"></div>
+  <div id="en"></div>
+  <div id="rep-status"></div>
+</div>
+
+<div id="opts">
+  <button class="opt" id="opt-rep">复读 <b>×3</b></button>
+  <button class="opt" id="opt-speed">语速 <b>0.8</b></button>
+  <button class="opt" id="opt-mode">模式 <b>跟读</b></button>
+  <button class="opt" id="opt-order">顺序 <b>顺播</b></button>
+  <button class="opt" id="opt-zhaudio">中文音 <b>开</b></button>
+  <button class="opt" id="opt-enaudio">英文音 <b>关</b></button>
+  <button class="opt" id="opt-xie">谐音 <b>显</b></button>
+  <button class="opt" id="opt-vocab">今日<b>词汇</b></button>
+</div>
+
+<div id="controls">
+  <button class="ctl" id="btn-prev">◀︎</button>
+  <button class="ctl main" id="btn-play">▶︎</button>
+  <button class="ctl" id="btn-next">▶︎▶︎</button>
+</div>
+<div id="voice-note">点 ▶︎ 开始 · 保持屏幕常亮 · 建议 Safari 打开</div>
+
+<div id="vocab">
+  <div id="v-head"><h2>Day <em id="v-day">1</em> 高频词汇</h2><button id="v-close">返回句子</button></div>
+  <button id="v-all">▶︎ 连播本页词汇</button>
+  <div id="v-list"></div>
+</div>
+
+<script src="data.js?v=1"></script>
+<script>
+const DAYS = window.HOTELFR;
+const $ = id => document.getElementById(id);
+const synth = window.speechSynthesis;
+
+// ------- 音频引擎：有 MP3 用 MP3，否则用系统语音 -------
+let MANIFEST = null;
+fetch('audio/manifest.json?v=1').then(r=>r.ok?r.json():null).then(j=>{ if(j) MANIFEST=new Set(j); }).catch(()=>{});
+let frVoice=null, zhVoice=null, enVoice=null;
+function pickVoices(){
+  const all = synth.getVoices();
+  const pick = (langPrefix, prefs) => {
+    const list = all.filter(v=>v.lang && v.lang.toLowerCase().startsWith(langPrefix));
+    for(const p of prefs){ const h=list.find(v=>v.name.includes(p)&&(v.name.includes('Enhanced')||v.name.includes('Premium'))); if(h) return h; }
+    for(const p of prefs){ const h=list.find(v=>v.name.includes(p)); if(h) return h; }
+    return list[0]||null;
+  };
+  frVoice = pick('fr', ['Thomas','Amélie','Amelie','Audrey','Aurélie','Daniel','Marie']);
+  zhVoice = pick('zh', ['Tingting','婷婷','Meijia','Sinji']);
+  enVoice = pick('en', ['Samantha','Ava','Allison','Karen','Daniel']);
+}
+synth.onvoiceschanged = pickVoices; pickVoices();
+
+let currentAudio=null;
+function speak(id, lang, text, rate, onEnd){
+  const my = session;
+  const done = ()=>{ if(my===session) onEnd(); };
+  const key = id+'_'+lang;
+  if(MANIFEST && MANIFEST.has(key)){
+    synth.cancel();
+    const a = new Audio('audio/'+key+'.mp3');
+    currentAudio = a;
+    a.playbackRate = lang==='fr' ? rate : 1.0;
+    a.onended = done; a.onerror = done;
+    a.play().catch(done);
+    return;
+  }
+  synth.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  const v = lang==='fr'?frVoice : lang==='zh'?zhVoice : enVoice;
+  if(v) u.voice = v;
+  u.lang = lang==='fr'?'fr-FR' : lang==='zh'?'zh-CN' : 'en-US';
+  u.rate = lang==='fr' ? rate : 1.0;
+  u.onend = done; u.onerror = done;
+  synth.speak(u);
+}
+function stopAudio(){ synth.cancel(); if(currentAudio){ currentAudio.pause(); currentAudio=null; } }
+
+// ------- 状态 -------
+const SAVE_KEY='hotelfr-pos-v1';
+let day = 0;              // 0..6 = Day1..7, 7 = 全部复习
+let LIST = [];            // 当前播放列表
+let idx = 0;
+let playing=false, repTarget=3, repDone=0, rate=0.8, mode='follow';
+let zhAudio=true, enAudio=false, shuffle=false, showXie=true;
+let timer=null, session=0;
+
+function buildList(){
+  LIST = day===7 ? DAYS.flatMap(d=>d.sents) : DAYS[day].sents;
+}
+function loadPos(){
+  try{ const s=JSON.parse(localStorage.getItem(SAVE_KEY)); if(s){ day=s.day||0; idx=s.idx||0; } }catch(e){}
+}
+function savePos(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify({day,idx})); }catch(e){} }
+
+// ------- 日程条 -------
+const chipsEl=$('chips');
+const chipLabels = DAYS.map(d=>'Day '+d.d+' · '+d.title.split(' · ')[0]).concat(['全部复习']);
+chipLabels.forEach((t,i)=>{
+  const b=document.createElement('button'); b.className='chip'; b.textContent=t;
+  b.onclick=()=>{ stop(); day=i; idx=0; buildList(); render(); };
+  chipsEl.appendChild(b);
+});
+
+// ------- 渲染 -------
+function repLabel(){ return repTarget===Infinity?'∞':('×'+repTarget); }
+function render(){
+  const r=LIST[idx];
+  $('sec-label').textContent = (day===7 ? 'Day '+r.id[1]+' · ' : '') + r.sc;
+  $('fr').textContent=r.f; $('xie').textContent=r.x; $('zh').textContent=r.c; $('en').textContent=r.e;
+  $('xie').classList.toggle('hide', !showXie);
+  $('counter').textContent=(idx+1)+' / '+LIST.length;
+  $('goal').textContent = day===7 ? '全部 '+LIST.length+' 句 · 建议开随机' : DAYS[day].goal;
+  [...chipsEl.children].forEach((c,i)=>{ c.classList.toggle('on',i===day); if(i===day) c.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'}); });
+  savePos();
+}
+function setRepStatus(t){ $('rep-status').textContent=t; }
+function wait(ms,fn){ const my=session; timer=setTimeout(()=>{ if(my===session) fn(); },ms); }
+
+// ------- 播放流程 -------
+// 跟读: 法 → (中) → (英) → 法 ... ×N
+// 回想: 先播中文(法语遮住) → 停2.2秒你开口 → 亮出法语 → 法 ×N
+function playCurrent(){
+  if(!playing) return;
+  $('playing-dot').classList.add('on');
+  repDone=0;
+  const r=LIST[idx];
+  if(mode==='recall'){
+    $('fr').classList.add('dim'); $('xie').classList.add('hide');
+    setRepStatus('听中文，开口说法语…');
+    speak(r.id,'zh',r.c.split('（')[0],1,()=>wait(2200,()=>{
+      $('fr').classList.remove('dim'); $('xie').classList.toggle('hide',!showXie);
+      cycle();
+    }));
+  } else {
+    $('fr').classList.remove('dim');
+    cycle();
+  }
+}
+function cycle(){
+  if(!playing) return;
+  if(repTarget!==Infinity && repDone>=repTarget){ advance(); return; }
+  setRepStatus(repTarget===Infinity ? '无限复读中 · 第 '+(repDone+1)+' 遍' : '复读 '+(repDone+1)+' / '+repTarget);
+  const r=LIST[idx];
+  speak(r.id,'fr',r.tf,rate,()=>{
+    if(!playing) return;
+    const afterZh = ()=>{
+      if(enAudio){ wait(250,()=>speak(r.id,'en',r.e,1,()=>{ repDone++; wait(650,cycle); })); }
+      else { repDone++; wait(650,cycle); }
+    };
+    if(zhAudio){ wait(300,()=>speak(r.id,'zh',r.c.split('（')[0],1,afterZh)); }
+    else afterZh();
+  });
+}
+function advance(){
+  if(repTarget===Infinity) return;
+  wait(1100,()=>{
+    if(shuffle){ let n; do{ n=Math.floor(Math.random()*LIST.length);}while(n===idx&&LIST.length>1); idx=n; }
+    else if(idx<LIST.length-1){ idx++; }
+    else { stop(); setRepStatus('本页学完 ✓'); return; }
+    render(); playCurrent();
+  });
+}
+function start(){ pickVoices(); session++; playing=true; $('btn-play').textContent='⏸'; render(); playCurrent(); }
+function stop(){
+  session++; playing=false; clearTimeout(timer); stopAudio();
+  $('btn-play').textContent='▶︎'; $('playing-dot').classList.remove('on');
+  $('fr').classList.remove('dim'); $('xie').classList.toggle('hide',!showXie); setRepStatus('');
+}
+setInterval(()=>{ if(playing && synth.paused) synth.resume(); },4000);
+
+// ------- 控件 -------
+$('btn-play').onclick=()=>playing?stop():start();
+$('btn-prev').onclick=()=>{ const was=playing; stop(); if(idx>0) idx--; render(); if(was) start(); };
+$('btn-next').onclick=()=>{
+  const was=playing; stop();
+  if(shuffle){ let n; do{ n=Math.floor(Math.random()*LIST.length);}while(n===idx&&LIST.length>1); idx=n; }
+  else if(idx<LIST.length-1) idx++;
+  render(); if(was) start();
+};
+const reps=[1,3,5,20,Infinity];
+$('opt-rep').onclick=e=>{ repTarget=reps[(reps.indexOf(repTarget)+1)%reps.length]; e.currentTarget.querySelector('b').textContent=repLabel(); };
+const rates=[0.6,0.8,1.0];
+$('opt-speed').onclick=e=>{ rate=rates[(rates.indexOf(rate)+1)%rates.length]; e.currentTarget.querySelector('b').textContent=rate.toFixed(1); };
+$('opt-mode').onclick=e=>{ mode=mode==='follow'?'recall':'follow'; e.currentTarget.querySelector('b').textContent=mode==='follow'?'跟读':'回想'; $('fr').classList.remove('dim'); };
+$('opt-order').onclick=e=>{ shuffle=!shuffle; e.currentTarget.querySelector('b').textContent=shuffle?'随机':'顺播'; };
+$('opt-zhaudio').onclick=e=>{ zhAudio=!zhAudio; e.currentTarget.querySelector('b').textContent=zhAudio?'开':'关'; };
+$('opt-enaudio').onclick=e=>{ enAudio=!enAudio; e.currentTarget.querySelector('b').textContent=enAudio?'开':'关'; };
+$('opt-xie').onclick=e=>{ showXie=!showXie; e.currentTarget.querySelector('b').textContent=showXie?'显':'隐'; $('xie').classList.toggle('hide',!showXie); };
+
+// ------- 词汇面板 -------
+let vList=[], vIdx=0, vPlaying=false, vSession=0;
+function vocabDay(){ return day===7 ? 0 : day; }
+function openVocab(){
+  stop();
+  const d = DAYS[vocabDay()];
+  vList = day===7 ? DAYS.flatMap(x=>x.vocab) : d.vocab;
+  $('v-day').textContent = day===7 ? '1-7' : d.d;
+  const list=$('v-list'); list.innerHTML='';
+  vList.forEach((v,i)=>{
+    const row=document.createElement('div'); row.className='v-row'; row.dataset.i=i;
+    row.innerHTML='<div class="v-txt"><div class="v-f"></div><div class="v-x"></div><div class="v-c"><span></span></div></div><button class="v-play">▶︎</button>';
+    row.querySelector('.v-f').textContent=v.f; row.querySelector('.v-x').textContent=v.x;
+    row.querySelector('.v-c').insertBefore(document.createTextNode(v.c), row.querySelector('.v-c span')); row.querySelector('.v-c span').textContent=v.e;
+    row.querySelector('.v-play').onclick=()=>{ vStop(); vIdx=i; vPlayOne(false); };
+    list.appendChild(row);
+  });
+  $('vocab').classList.add('on');
+}
+function vMark(){ [...$('v-list').children].forEach((r,i)=>r.classList.toggle('playing',i===vIdx&&vPlaying)); if(vPlaying) $('v-list').children[vIdx].scrollIntoView({block:'center',behavior:'smooth'}); }
+function vPlayOne(chain){
+  const v=vList[vIdx]; vPlaying=true; vSession++; const my=vSession; session++; vMark();
+  const next=()=>{ if(my!==vSession) return; if(!chain){ vPlaying=false; vMark(); return; }
+    if(vIdx<vList.length-1){ vIdx++; setTimeout(()=>{ if(my===vSession) vPlayOne(true); },700); } else { vPlaying=false; vMark(); $('v-all').textContent='▶︎ 连播本页词汇'; } };
+  // 法语两遍 + 中文一遍
+  speak(v.id,'fr',v.tf,rate,()=>{ if(my!==vSession) return; setTimeout(()=>{ if(my!==vSession) return;
+    speak(v.id,'fr',v.tf,rate,()=>{ if(my!==vSession) return; setTimeout(()=>{ if(my!==vSession) return;
+      speak(v.id,'zh',v.c.split('（')[0].split(' / ')[0],1,next); },250); }); },500); });
+}
+function vStop(){ vSession++; session++; vPlaying=false; stopAudio(); vMark(); $('v-all').textContent='▶︎ 连播本页词汇'; }
+$('opt-vocab').onclick=openVocab;
+$('v-close').onclick=()=>{ vStop(); $('vocab').classList.remove('on'); };
+$('v-all').onclick=e=>{ if(vPlaying){ vStop(); return; } vIdx=0; e.currentTarget.textContent='⏸ 停止'; vPlayOne(true); };
+
+// ------- 启动 -------
+loadPos(); buildList(); if(idx>=LIST.length) idx=0; render();
+</script>
+</body>
+</html>
